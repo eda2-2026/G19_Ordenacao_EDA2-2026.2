@@ -2,13 +2,13 @@
 
 Este projeto criado para aplicar fundamentos de orientação a objetos, no qual consiste no desenvolvimento de um site de vendas de miniaturas de carros. O objetivo principal do desenvolvimento foi aplicar conceitos acadêmicos de Estruturas de Dados e Algoritmos de Ordenação em um cenário prático, utilizando uma arquitetura brutas para demonstrar o domínio da lógica de programação.
 
-🚀 Funcionalidades do Sistema
+## 🚀 Funcionalidades do Sistema
 
 • Catálogo Dinâmico: Exibição modular de miniaturas separadas automaticamente entre categorias (Carros e Motos).
 • Filtro e Ordenação Bruta: Mecanismo integrado na interface que reordena os produtos dinamicamente a partir da escolha do usuário.
 
 
-🧠 O Algoritmo: Insertion Sort
+## 🧠 O Algoritmo: Insertion Sort
 
 Para a ordenação do catálogo, foi implementado o algoritmo Insertion Sort (Ordenação por Inserção) de forma totalmente artesanal no backend, sem o uso de funções nativas de ordenação da linguagem Python (como .sort() ou sorted()).
 
