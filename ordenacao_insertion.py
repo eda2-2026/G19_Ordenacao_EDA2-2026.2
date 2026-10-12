@@ -1,27 +1,24 @@
 def insertion_sort_miniaturas(lista, sentido="menor"):
     """
-    Ordena a lista de miniaturas de carrinhos por preço.
     sentido="menor" -> Ordem Crescente (Menor para o Maior)
     sentido="maior" -> Ordem Decrescente (Maior para o Menor)
     """
-    n = len(lista)
+    n = len(lista) # definir o tamanho
     
-    for i in range(1, n):
-        carrinho_atual = lista[i]
-        preco_atual = carrinho_atual['preco']
+    for i in range(1, n): # começa a percorrer a lista a partir do 2° elemento 
+        carrinho_atual = lista[i] # seleciona e isola o produto que está sendo avaliado nesta rodada
+        preco_atual = carrinho_atual['preco'] # acessa e salva o valor contido na chave ['preco'] do dicionário.
         
-        j = i - 1
+        j = i - 1 # começa a variável j apontando p/ o índice do elem. à esquerda do carrinho_atual
         
-        # A mágica acontece aqui: criamos uma condição flexível
-        if sentido == "menor":
-            # Condição clássica: empurra os mais caros para a direita
-            deve_deslocar = lambda preco_lista: preco_lista > preco_atual
-        else:
-            # Condição inversa: empurra os mais baratos para a direita
-            deve_deslocar = lambda preco_lista: preco_lista < preco_atual
+        
+        if sentido == "menor": # criamos uma condição flexível
+            
+            deve_deslocar = lambda preco_lista: preco_lista > preco_atual # empurra os mais caros para a direita (menor preço)
+        else:  
+            deve_deslocar = lambda preco_lista: preco_lista < preco_atual # empurra os mais baratos para a direita (maior preço)
 
-        # Executa o deslocamento bruto baseado na regra escolhida
-        while j >= 0 and deve_deslocar(lista[j]['preco']):
+        while j >= 0 and deve_deslocar(lista[j]['preco']): # Executa o deslocamento enquanto as duas regras brutas forem verdadeiras
             lista[j + 1] = lista[j]
             j -= 1
             
