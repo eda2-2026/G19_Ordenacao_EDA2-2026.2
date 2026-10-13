@@ -12,8 +12,6 @@ Este projeto criado para aplicar fundamentos de orientação a objetos, no qual 
 
 Produzimos um vídeo demonstrativo detalhando o funcionamento prático da nossa loja *Garage Models*, o reaproveitamento da estrutura criada em Orientação a Objetos e a explicação da lógica brute do algoritmo **Insertion Sort** aplicada aos filtros de preço.
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/hQTDm2S13I8?si=GhZcWlTAbMjFWk37" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-
 ▶️ **[Clique aqui para assistir diretamente no YouTube](https://youtu.be/hQTDm2S13I8?si=GhZcWlTAbMjFWk37)**
 
 > 💡 *Nota: Caso o player acima não carregue ou o link não funcione, você também pode copiar e colar a seguinte URL no seu navegador:*  
