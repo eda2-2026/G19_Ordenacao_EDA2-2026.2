@@ -12,16 +12,12 @@ Este projeto criado para aplicar fundamentos de orientação a objetos, no qual 
 
 Produzimos um vídeo demonstrativo detalhando o funcionamento prático da nossa loja *Garage Models*, o reaproveitamento da estrutura criada em Orientação a Objetos e a explicação da lógica brute do algoritmo **Insertion Sort** aplicada aos filtros de preço.
 
-▶️ **[Clique aqui para assistir](LINK_DO_VIDEO_AQUI)**
+<iframe width="560" height="315" src="https://www.youtube.com/embed/hQTDm2S13I8?si=GhZcWlTAbMjFWk37" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
-> 💡 *Nota: Caso o link acima não funcione diretamente, você também pode copiar e colar a seguinte URL no seu navegador:*  
-> `LINK_DO_VIDEO_AQUI`
+▶️ **[Clique aqui para assistir diretamente no YouTube](https://youtu.be/hQTDm2S13I8?si=GhZcWlTAbMjFWk37)**
 
-## 🚀 Funcionalidades do Sistema
-
-• Catálogo Dinâmico: Exibição modular de miniaturas separadas automaticamente entre categorias (Carros e Motos).
-• Filtro e Ordenação Bruta: Mecanismo integrado na interface que reordena os produtos dinamicamente a partir da escolha do usuário.
-
+> 💡 *Nota: Caso o player acima não carregue ou o link não funcione, você também pode copiar e colar a seguinte URL no seu navegador:*  
+> `https://youtu.be/hQTDm2S13I8?si=GhZcWlTAbMjFWk37`
 
 ## 🧠 O Algoritmo: Insertion Sort
 
@@ -36,11 +32,7 @@ Para a banca examinadora e avaliação acadêmica, a escolha do Insertion Sort f
 
 
 
-# 📄 Merge Sort — Documentação da Execução
-
-**Projeto:** Garage Models | **Disciplina:** ED2 — Estrutura de Dados e Algoritmos 2
-
----
+##  Merge Sort — Documentação da Execução
 
 ## 🧠 O que é o Merge Sort?
 O Merge Sort é um algoritmo de ordenação baseado na estratégia de **Dividir para Conquistar** (*Divide and Conquer*).
