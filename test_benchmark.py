@@ -2,6 +2,8 @@ import sys
 import os
 import copy
 import timeit
+import random
+import string
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
@@ -9,7 +11,7 @@ from ordenacao_merge import merge_sort_miniaturas
 from ordenacao_insertion import insertion_sort_miniaturas
 
 # ──────────────────────────────────────────────
-# Dataset real do projeto
+# Dataset real do projeto (N=27)
 # ──────────────────────────────────────────────
 MINIATURAS_BD = [
     {"id": 1,  "nome": "Nissan Skyline GT-R R34 2000",  "tipo": "carro", "preco": 99.90},
@@ -41,66 +43,44 @@ MINIATURAS_BD = [
     {"id": 27, "nome": "Yamaha FZ MT-09 2023",          "tipo": "moto",  "preco": 109.90},
 ]
 
-REPETICOES = 10_000
+# Marcas e modelos base para gerar mocks realistas
+MARCAS = [
+    "Audi", "BMW", "Chevrolet", "Dodge", "Ferrari", "Ford", "Honda",
+    "Hyundai", "Jaguar", "Kawasaki", "Kia", "Lamborghini", "Lexus",
+    "Mazda", "Mercedes", "Mitsubishi", "Nissan", "Peugeot", "Porsche",
+    "Renault", "Subaru", "Suzuki", "Toyota", "Volkswagen", "Volvo",
+    "Yamaha", "Ducati", "Triumph", "Harley", "Royal Enfield",
+]
+MODELOS = [
+    "GT-R", "Turbo", "Sport", "RS", "AMG", "M3", "Type-R", "GTI",
+    "Nismo", "Shelby", "Cobra", "Viper", "Hellcat", "STI", "EVO",
+    "Z06", "Cayman", "Boxster", "Supra", "NSX", "Civic", "Corolla",
+    "Ninja", "CBR", "YZF", "GSX", "Hayabusa", "Panigale", "Fireblade",
+]
+
+def gerar_mock(n_total):
+    """Gera uma lista de n_total produtos com nomes e preços aleatórios."""
+    random.seed(42)  # Seed fixo para resultados reproduzíveis
+    base = list(MINIATURAS_BD)  # começa com os 27 reais
+    extra_necessario = max(0, n_total - len(base))
+    for i in range(extra_necessario):
+        marca  = random.choice(MARCAS)
+        modelo = random.choice(MODELOS)
+        ano    = random.randint(2000, 2024)
+        preco  = round(random.uniform(29.90, 499.90), 2)
+        base.append({
+            "id":    len(base) + 1,
+            "nome":  f"{marca} {modelo} {ano}",
+            "tipo":  random.choice(["carro", "moto"]),
+            "preco": preco,
+        })
+    random.shuffle(base)  # embaralha para o pior caso
+    return base[:n_total]
 
 
-def mostrar_resultado(lista, chave):
-    valores = [item[chave] for item in lista]
-    if len(valores) > 6:
-        preview = valores[:3] + ["..."] + valores[-3:]
-    else:
-        preview = valores
-    return " → ".join(str(v) for v in preview)
-
-
-def separador(titulo):
-    print()
-    print("=" * 62)
-    print(f"  {titulo}")
-    print("=" * 62)
-
-
-def rodar_teste(descricao, fn_merge, fn_insertion, chave, extra_merge, extra_insertion):
-    print(f"\n  📌 {descricao}")
-    print(f"  {'─' * 57}")
-
-    # Mede tempo total de N repetições (em segundos)
-    tempo_merge_s = timeit.timeit(
-        lambda: fn_merge(copy.deepcopy(MINIATURAS_BD), **extra_merge),
-        number=REPETICOES
-    )
-    tempo_insertion_s = timeit.timeit(
-        lambda: fn_insertion(copy.deepcopy(MINIATURAS_BD), **extra_insertion),
-        number=REPETICOES
-    )
-
-    # Calcula tempo médio por execução em segundos
-    media_merge     = tempo_merge_s     / REPETICOES
-    media_insertion = tempo_insertion_s / REPETICOES
-
-    # Executa uma vez para pegar o resultado ordenado
-    lista_merge = copy.deepcopy(MINIATURAS_BD)
-    fn_merge(lista_merge, **extra_merge)
-    lista_insertion = copy.deepcopy(MINIATURAS_BD)
-    fn_insertion(lista_insertion, **extra_insertion)
-
-    print(f"  🔵 Merge Sort     → Total: {tempo_merge_s:.6f}s  |  Média: {media_merge:.8f}s")
-    print(f"     Resultado: {mostrar_resultado(lista_merge, chave)}")
-    print()
-    print(f"  🟠 Insertion Sort → Total: {tempo_insertion_s:.6f}s  |  Média: {media_insertion:.8f}s")
-    print(f"     Resultado: {mostrar_resultado(lista_insertion, chave)}")
-
-    diff = abs(media_merge - media_insertion)
-    if media_merge < media_insertion:
-        vencedor, perdedor = "🔵 Merge Sort", "Insertion Sort"
-    else:
-        vencedor, perdedor = "🟠 Insertion Sort", "Merge Sort"
-
-    porcentagem = (diff / max(media_merge, media_insertion)) * 100
-    print(f"\n  🏆 Mais rápido: {vencedor}  ({porcentagem:.1f}% mais veloz que {perdedor})")
-
-
-# Insertion Sort adaptado para comparação justa na ordenação alfabética
+# ──────────────────────────────────────────────
+# Algoritmos auxiliares para comparação justa
+# ──────────────────────────────────────────────
 def insertion_sort_por_nome(lista, sentido="az"):
     n = len(lista)
     for i in range(1, n):
@@ -109,38 +89,62 @@ def insertion_sort_por_nome(lista, sentido="az"):
         j = i - 1
         if sentido == "az":
             while j >= 0 and lista[j]["nome"].lower() > chave:
-                lista[j + 1] = lista[j]
-                j -= 1
+                lista[j + 1] = lista[j]; j -= 1
         else:
             while j >= 0 and lista[j]["nome"].lower() < chave:
-                lista[j + 1] = lista[j]
-                j -= 1
+                lista[j + 1] = lista[j]; j -= 1
         lista[j + 1] = atual
 
-
-# Merge Sort adaptado para comparação justa na ordenação numérica
 def merge_sort_por_preco(lista, sentido="crescente"):
     if len(lista) > 1:
         meio = len(lista) // 2
-        esq = lista[:meio]
-        dir_ = lista[meio:]
+        esq, dir_ = lista[:meio], lista[meio:]
         merge_sort_por_preco(esq, sentido)
         merge_sort_por_preco(dir_, sentido)
         i = j = k = 0
         while i < len(esq) and j < len(dir_):
-            if sentido == "crescente":
-                cond = esq[i]["preco"] <= dir_[j]["preco"]
-            else:
-                cond = esq[i]["preco"] >= dir_[j]["preco"]
-            if cond:
-                lista[k] = esq[i]; i += 1
-            else:
-                lista[k] = dir_[j]; j += 1
+            cond = esq[i]["preco"] <= dir_[j]["preco"] if sentido == "crescente" else esq[i]["preco"] >= dir_[j]["preco"]
+            if cond: lista[k] = esq[i]; i += 1
+            else:    lista[k] = dir_[j]; j += 1
             k += 1
-        while i < len(esq):
-            lista[k] = esq[i]; i += 1; k += 1
-        while j < len(dir_):
-            lista[k] = dir_[j]; j += 1; k += 1
+        while i < len(esq):  lista[k] = esq[i];  i += 1; k += 1
+        while j < len(dir_): lista[k] = dir_[j]; j += 1; k += 1
+
+
+# ──────────────────────────────────────────────
+# Função de benchmark por tamanho de dataset
+# ──────────────────────────────────────────────
+def benchmark_escala(tamanho, fn_merge, fn_insertion, extra_merge, extra_insertion, repeticoes):
+    dataset = gerar_mock(tamanho)
+    t_merge = timeit.timeit(
+        lambda: fn_merge(copy.deepcopy(dataset), **extra_merge),
+        number=repeticoes
+    )
+    t_insertion = timeit.timeit(
+        lambda: fn_insertion(copy.deepcopy(dataset), **extra_insertion),
+        number=repeticoes
+    )
+    media_m = t_merge     / repeticoes
+    media_i = t_insertion / repeticoes
+    vencedor = "🔵 Merge" if media_m < media_i else "🟠 Insertion"
+    diff_pct = abs(media_m - media_i) / max(media_m, media_i) * 100
+    return media_m, media_i, vencedor, diff_pct
+
+
+def imprimir_tabela_escala(titulo, fn_merge, fn_insertion, extra_merge, extra_insertion):
+    print(f"\n  {'─' * 57}")
+    print(f"  📊 {titulo}")
+    print(f"  {'─' * 57}")
+    print(f"  {'N':>8}  │  {'Merge Sort (s)':>16}  │  {'Insertion (s)':>16}  │  Vencedor")
+    print(f"  {'─'*8}──┼──{'─'*16}──┼──{'─'*16}──┼──{'─'*20}")
+
+    tamanhos = [27, 100, 300, 500, 1000, 2000, 5000]
+    for n in tamanhos:
+        reps = max(100, 10_000 // n)  # menos repetições para N grande
+        m, i, venc, pct = benchmark_escala(n, fn_merge, fn_insertion, extra_merge, extra_insertion, reps)
+        print(f"  {n:>8}  │  {m:>16.8f}  │  {i:>16.8f}  │  {venc}  ({pct:.1f}%)")
+
+    print(f"  {'─' * 57}")
 
 
 # ══════════════════════════════════════════════════════════
@@ -150,73 +154,67 @@ print()
 print("╔════════════════════════════════════════════════════════════╗")
 print("║       COMPARAÇÃO DE ALGORITMOS — GARAGE MODELS ED2        ║")
 print("║              Merge Sort  vs  Insertion Sort                ║")
-print(f"║       Dataset: {len(MINIATURAS_BD)} produtos  |  {REPETICOES:,} repetições cada       ║")
-print("║       Unidade: segundos (s)                                ║")
+print("║       Múltiplos tamanhos de dataset  |  Unidade: segundos  ║")
 print("╚════════════════════════════════════════════════════════════╝")
+print()
+print("  ⏳ Aguarde — rodando testes com múltiplos N...")
 
-separador("ORDENAÇÃO ALFABÉTICA (por nome)")
-
-rodar_teste(
-    descricao="A → Z (crescente)",
+print()
+print("=" * 62)
+print("  ESCALA: ORDENAÇÃO ALFABÉTICA (por nome)  A → Z")
+print("=" * 62)
+imprimir_tabela_escala(
+    "Merge Sort vs Insertion Sort — A → Z",
     fn_merge=merge_sort_miniaturas,
     fn_insertion=insertion_sort_por_nome,
-    chave="nome",
     extra_merge={"sentido": "crescente"},
     extra_insertion={"sentido": "az"},
 )
 
-rodar_teste(
-    descricao="Z → A (decrescente)",
-    fn_merge=merge_sort_miniaturas,
-    fn_insertion=insertion_sort_por_nome,
-    chave="nome",
-    extra_merge={"sentido": "decrescente"},
-    extra_insertion={"sentido": "za"},
-)
-
-separador("ORDENAÇÃO NUMÉRICA (por preço)")
-
-rodar_teste(
-    descricao="Menor → Maior preço (crescente)",
+print()
+print("=" * 62)
+print("  ESCALA: ORDENAÇÃO NUMÉRICA (por preço)  Crescente")
+print("=" * 62)
+imprimir_tabela_escala(
+    "Merge Sort vs Insertion Sort — Menor → Maior preço",
     fn_merge=merge_sort_por_preco,
     fn_insertion=insertion_sort_miniaturas,
-    chave="preco",
     extra_merge={"sentido": "crescente"},
     extra_insertion={"sentido": "menor"},
-)
-
-rodar_teste(
-    descricao="Maior → Menor preço (decrescente)",
-    fn_merge=merge_sort_por_preco,
-    fn_insertion=insertion_sort_miniaturas,
-    chave="preco",
-    extra_merge={"sentido": "decrescente"},
-    extra_insertion={"sentido": "maior"},
 )
 
 # ──────────────────────────────────────────────
 # RESUMO TEÓRICO
 # ──────────────────────────────────────────────
-N = len(MINIATURAS_BD)
 print()
 print("=" * 62)
-print("  RESUMO TEÓRICO")
+print("  POR QUE O INSERTION GANHA EM N PEQUENO?")
 print("=" * 62)
-print(f"  Dataset atual:  N = {N} elementos")
-print(f"  Merge Sort     → O(N log N) ≈ {N} × {N.bit_length()} = {N * N.bit_length()} operações")
-print(f"  Insertion Sort → O(N²)      = {N}² = {N**2} operações (pior caso)")
-print()
-print("  Projeção com datasets maiores:")
-print("  ┌─────────┬──────────────────┬─────────────────────┐")
-print("  │    N    │  Merge (N log N) │  Insertion Sort (N²)│")
-print("  ├─────────┼──────────────────┼─────────────────────┤")
-print("  │      27 │              135 │                 729 │")
-print("  │   1.000 │           10.000 │           1.000.000 │")
-print("  │  10.000 │          130.000 │         100.000.000 │")
-print("  │ 100.000 │        1.700.000 │      10.000.000.000 │")
-print("  └─────────┴──────────────────┴─────────────────────┘")
-print()
-print("  💡 Com N=27 as diferenças são mínimas em segundos.")
-print("     Em escala real, o Merge Sort é exponencialmente melhor.")
+print("""
+  O Merge Sort tem um CUSTO FIXO maior por execução:
+    • Cria sublistas novas (esquerda / direita) na memória
+    • Faz chamadas recursivas (overhead de função)
+    • Copia elementos de volta para a lista original
+
+  O Insertion Sort é mais simples:
+    • Trabalha no lugar (in-place), sem alocar memória extra
+    • Sem recursão — só um while simples
+    • Com N pequeno, esse "trabalho extra" do Merge domina o tempo
+
+  O PONTO DE VIRADA acontece quando N cresce o suficiente
+  para que O(N²) do Insertion supere O(N log N) do Merge.
+  Na tabela acima você consegue ver exatamente onde isso ocorre!
+
+  Complexidade comparada:
+  ┌──────────────┬────────────────┬──────────────────────┐
+  │      N       │  Merge (N logN)│  Insertion Sort (N²) │
+  ├──────────────┼────────────────┼──────────────────────┤
+  │           27 │            135 │                  729 │
+  │          100 │            700 │               10.000 │
+  │          500 │          4.500 │              250.000 │
+  │        1.000 │         10.000 │            1.000.000 │
+  │        5.000 │         60.000 │           25.000.000 │
+  └──────────────┴────────────────┴──────────────────────┘
+""")
 print("=" * 62)
 print()
