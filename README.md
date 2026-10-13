@@ -34,6 +34,201 @@ Para a banca examinadora e avaliação acadêmica, a escolha do Insertion Sort f
 2. Estabilidade Garantida: O Insertion Sort é um algoritmo estável. No contexto de um e-commerce, isso garante que se dois produtos possuírem exatamente o mesmo preço, eles manterão estritamente a ordem de relevância ou ID original em que foram cadastrados, prevenindo comportamentos imprevisíveis na interface do usuário.
 3. Complexidade de Espaço Extra O(1): A ordenação opera diretamente sobre as referências da lista (in-place), economizando recursos de memória do servidor de aplicação.
 
+
+
+# 📄 Merge Sort — Documentação da Execução
+
+**Projeto:** Garage Models | **Disciplina:** ED2 — Estrutura de Dados e Algoritmos 2
+
+---
+
+## 🧠 O que é o Merge Sort?
+O Merge Sort é um algoritmo de ordenação baseado na estratégia de **Dividir para Conquistar** (*Divide and Conquer*).
+
+A ideia principal é simples:
+> *"Se eu não consigo ordenar uma lista grande de uma vez, eu divido ela em partes menores até chegar em pedaços tão pequenos que já estejam ordenados por natureza — e aí eu junto tudo na ordem certa."*
+
+---
+
+## ⚙️ Como funciona: as 3 Fases
+
+### Fase 1 — DIVISÃO 🔪
+A função divide a lista ao meio recursivamente até que cada sublista tenha apenas 1 elemento (um elemento sozinho está sempre "ordenado").
+
+```python
+meio = len(lista) // 2
+esquerda = lista[:meio]
+direita  = lista[meio:]
+
+merge_sort_miniaturas(esquerda, sentido)  # recursão
+merge_sort_miniaturas(direita,  sentido)  # recursão
+```
+
+### Fase 2 — CONQUISTA (Mesclagem) 🔀
+Depois de dividir, ele mescla as sublistas comparando os elementos e colocando-os em ordem.
+
+```python
+while i < len(esquerda) and j < len(direita):
+    nome_esq = esquerda[i]['nome'].lower()
+    nome_dir = direita[j]['nome'].lower()
+
+    if sentido == "crescente":
+        condicao = nome_esq <= nome_dir   # A → Z
+    else:
+        condicao = nome_esq >= nome_dir   # Z → A
+
+    if condicao:
+        lista[k] = esquerda[i]
+        i += 1
+    else:
+        lista[k] = direita[j]
+        j += 1
+    k += 1
+```
+
+### Fase 3 — COLETA DOS RESTOS 🧹
+Após a mesclagem, elementos que sobraram de um dos lados são copiados para a lista final.
+
+```python
+while i < len(esquerda):     # sobras da esquerda
+    lista[k] = esquerda[i]
+    i += 1
+    k += 1
+
+while j < len(direita):      # sobras da direita
+    lista[k] = direita[j]
+    j += 1
+    k += 1
+```
+
+---
+
+## 🎬 Execução Passo a Passo — Exemplo Real com Miniaturas
+
+Usando 4 carros do catálogo como exemplo:
+**Lista inicial:** `["Porsche 911", "BMW M5", "Audi A4", "Honda NSX"]`
+
+### 🔪 FASE 1: Divisões
+
+```text
+Nível 0 (lista completa):
+["Porsche 911", "BMW M5", "Audi A4", "Honda NSX"]
+                    ↓ meio = 2
+         ┌──────────────────────┐
+         ↓                      ↓
+["Porsche 911", "BMW M5"]   ["Audi A4", "Honda NSX"]
+        ↓ meio = 1                   ↓ meio = 1
+   ┌─────────┐                  ┌─────────┐
+   ↓         ↓                  ↓         ↓
+["Porsche"] ["BMW"]          ["Audi"]  ["Honda"]
+      ↑           ↑               ↑         ↑
+   tamanho 1  tamanho 1       tamanho 1  tamanho 1
+   (base da recursão — parar aqui!)
+```
+
+### 🔀 FASE 2: Mesclagens (subindo a recursão)
+
+**Mesclagem 1: `["Porsche"]` + `["BMW"]`**
+
+| Passo | Compara | Resultado |
+| :---: | :--- | :--- |
+| **1** | `"porsche"` vs `"bmw"` | `"bmw"` < `"porsche"` → BMW vai primeiro |
+| **2** | Só sobrou `"porsche"` | Porsche vai por último |
+
+✅ **Resultado:** `["BMW M5", "Porsche 911"]`
+
+**Mesclagem 2: `["Audi"]` + `["Honda"]`**
+
+| Passo | Compara | Resultado |
+| :---: | :--- | :--- |
+| **1** | `"audi"` vs `"honda"` | `"audi"` < `"honda"` → Audi vai primeiro |
+| **2** | Só sobrou `"honda"` | Honda vai por último |
+
+✅ **Resultado:** `["Audi A4", "Honda NSX"]`
+
+**Mesclagem Final: `["BMW M5", "Porsche 911"]` + `["Audi A4", "Honda NSX"]`**
+
+| Passo | Compara | Vencedor | Lista até agora |
+| :---: | :--- | :---: | :--- |
+| **1** | `"bmw"` vs `"audi"` | `audi` | `[Audi A4]` |
+| **2** | `"bmw"` vs `"honda"`| `bmw` | `[Audi A4, BMW M5]` |
+| **3** | `"porsche"` vs `"honda"`| `honda`| `[Audi A4, BMW M5, Honda NSX]` |
+| **4** | Só sobrou `"porsche"` | `porsche`| `[Audi A4, BMW M5, Honda NSX, Porsche 911]` |
+
+✅ **Resultado Final:** `["Audi A4", "BMW M5", "Honda NSX", "Porsche 911"]`
+
+---
+
+## 🔤 Por que funciona com letras?
+
+O Python compara strings letra por letra usando a tabela Unicode. Cada letra tem um número (ex: `'a'=97`, `'b'=98`, `'z'=122`). A comparação é feita assim:
+
+```python
+"audi" < "bmw"      # True → 'a'(97) < 'b'(98) ✅
+"bmw"  < "honda"    # True → 'b'(98) < 'h'(104) ✅
+"honda" < "porsche" # True → 'h'(104) < 'p'(112) ✅
+```
+
+Se a primeira letra for igual, vai para a segunda:
+```python
+"honda" < "hyundai" # 'h'=='h' → compara 'o'(111) vs 'y'(121) → True ✅
+```
+
+O `.lower()` garante que `"BMW"` e `"bmw"` sejam tratados igual:
+```python
+"BMW".lower()   == "bmw"   # 'b'=98
+"Audi".lower()  == "audi"  # 'a'=97  →  'a' < 'b'  →  Audi vem primeiro ✅
+```
+
+---
+
+## 📊 Complexidade
+
+| Métrica | Merge Sort (você) | Insertion Sort (amigo) |
+| :--- | :---: | :---: |
+| **Pior caso** | $O(N \log N)$ | $O(N^2)$ |
+| **Melhor caso** | $O(N \log N)$ | $O(N)$ |
+| **Caso médio** | $O(N \log N)$ | $O(N^2)$ |
+| **Memória extra** | $O(N)$ | $O(1)$ |
+| **Estável?** | ✅ Sim | ✅ Sim |
+
+**Por que $O(N \log N)$?**
+A cada nível de recursão, o algoritmo processa $N$ elementos no total.
+E o número de níveis é $\log_2(N)$ — porque dividimos ao meio sempre.
+Então: $N$ elementos $\times \log_2(N)$ níveis = $O(N \log N)$
+
+---
+
+## 🔗 Integração no Projeto Flask
+
+```text
+Usuário clica "Ordem Alfabética (A→Z)" no site
+            ↓
+HTML envia: GET /?ordem=alfabetica_az
+            ↓
+routes.py captura: ordem = request.args.get('ordem')
+            ↓
+if ordem == "alfabetica_az":
+    merge_sort_miniaturas(lista_produtos, sentido="crescente")
+            ↓
+ordenacao_merge.py executa o Merge Sort na lista
+            ↓
+Flask renderiza o index.html com os produtos já ordenados
+```
+
+---
+
+## 📁 Arquivos do Projeto
+
+| Arquivo | Função |
+| :--- | :--- |
+| `ordenacao_merge.py` | Implementação do Merge Sort |
+| `ordenacao_insertion.py` | Implementação do Insertion Sort (amigo) |
+| `routes.py` | Rotas Flask que chamam os algoritmos |
+| `templates/index.html` | Interface com o `<select>` de ordenação |
+
+> *Documentação gerada para apresentação da disciplina ED2 — Estrutura de Dados e Algoritmos 2.*
+
 ## 🛠️ Tecnologias Utilizadas
 
 * **Python** (Versão 3.x ou superior)
