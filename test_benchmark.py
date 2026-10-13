@@ -3,7 +3,6 @@ import os
 import copy
 import timeit
 import random
-import string
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
@@ -140,7 +139,7 @@ def imprimir_tabela_escala(titulo, fn_merge, fn_insertion, extra_merge, extra_in
 
     tamanhos = [27, 100, 300, 500, 1000, 2000, 5000]
     for n in tamanhos:
-        reps = max(100, 10_000 // n)  # menos repetições para N grande
+        reps = max(1, 1000 // n)  # CORREÇÃO: menos repetições para N grande
         m, i, venc, pct = benchmark_escala(n, fn_merge, fn_insertion, extra_merge, extra_insertion, reps)
         print(f"  {n:>8}  │  {m:>16.8f}  │  {i:>16.8f}  │  {venc}  ({pct:.1f}%)")
 
@@ -192,14 +191,14 @@ print("  POR QUE O INSERTION GANHA EM N PEQUENO?")
 print("=" * 62)
 print("""
   O Merge Sort tem um CUSTO FIXO maior por execução:
-    • Cria sublistas novas (esquerda / direita) na memória
-    • Faz chamadas recursivas (overhead de função)
-    • Copia elementos de volta para a lista original
+- Cria sublistas novas (esquerda / direita) na memória
+- Faz chamadas recursivas (overhead de função)
+- Copia elementos de volta para a lista original
 
   O Insertion Sort é mais simples:
-    • Trabalha no lugar (in-place), sem alocar memória extra
-    • Sem recursão — só um while simples
-    • Com N pequeno, esse "trabalho extra" do Merge domina o tempo
+- Trabalha no lugar (in-place), sem alocar memória extra
+- Sem recursão — só um while simples
+- Com N pequeno, esse "trabalho extra" do Merge domina o tempo
 
   O PONTO DE VIRADA acontece quando N cresce o suficiente
   para que O(N²) do Insertion supere O(N log N) do Merge.
